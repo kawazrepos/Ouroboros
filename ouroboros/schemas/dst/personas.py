@@ -17,3 +17,7 @@ class Persona(Base):
     is_superuser = Column(Boolean)
     last_login = Column(DateTime)
     date_joined = Column(DateTime)
+    nickname = Column(String)
+    quotes = Column(String)
+    avatar = Column(String)
+    gender = Column(String)
