@@ -21,27 +21,27 @@ def _copy(t):
     return copy.copy(t)
 
 def id():
-    def _id_table(table):
+    def _table(table):
         return _copy_table(table)
 
-    def _id_record(record):
+    def _record(record):
         return _copy(record)
 
-    return {'table': _id_table, 'record': _id_record}
+    return {'table': _table, 'record': _record}
 
 def rename_table(name):
-    def _rename_table(table):
+    def _table(table):
         t = _copy_table(table)
         _set_schema_name(t, name)
         return t
 
-    def _rename_record(record):
+    def _record(record):
         return _copy(record)
 
-    return {'table': _rename_table, 'record': _rename_record}
+    return {'table': _table, 'record': _record}
 
 def exclude_columns(columns):
-    def _exclude_columns_table(table):
+    def _table(table):
         new_table = Table(table.name, MetaData())
 
         for c in table.columns:
@@ -49,18 +49,18 @@ def exclude_columns(columns):
                 new_table.append_column(c.copy())
         return new_table
 
-    def _exclude_columns_record(record):
+    def _record(record):
         r = dict()
         for n in record.keys():
             if n not in columns:
                 r[n] = record[n]
         return r
 
-    return {'table': _exclude_columns_table, 'record': _exclude_columns_record}
+    return {'table': _table, 'record': _record}
 
 def rename_columns(maps):
     src_columns = maps.keys()
-    def _rename_columns_table(table):
+    def _table(table):
         new_table = Table(table.name, MetaData())
 
         for c in table.columns:
@@ -71,7 +71,7 @@ def rename_columns(maps):
 
         return new_table
 
-    def _rename_columns_record(record):
+    def _record(record):
         r = dict()
         for n in record.keys():
             r[n] = record[n]
@@ -84,5 +84,5 @@ def rename_columns(maps):
 
         return r
 
-    return {'table': _rename_columns_table, 'record': _rename_columns_record}
+    return {'table': _table, 'record': _record}
 
