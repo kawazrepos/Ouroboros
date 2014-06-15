@@ -20,7 +20,7 @@ converters = {
     'events_event_members': [rename_table('events_event_attendees'),
                              rename_columns({'user_id': 'persona_id'})],
 
-    'announcements_announcement': [exclude_columns(['upsated_by_id',
+    'announcements_announcement': [exclude_columns(['updated_by_id',
                                                     'publish_at',
                                                     'publish_at_date']),
                                    rename_columns({'sage': 'silently'})],
