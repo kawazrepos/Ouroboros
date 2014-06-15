@@ -1,7 +1,9 @@
+from functools import partial
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.schema import MetaData
-from ouroboros.utils.meta import id, rename_table, exclude_columns, rename_columns
+from ouroboros.utils.meta import id, rename_table, exclude_columns, rename_columns, join_tables
 
 converters = {
     'auth_group': [id()],
@@ -42,10 +44,11 @@ converters = {
                   exclude_columns(['tag'])]
 }
 
-def pipe_functions(dic, key):
+def pipe_converters(tables, src_tn, key):
     def piped(x):
         r = x
-        for d in dic:
+        for o in converters[src_tn]:
+            d = o(tables, src_tn)
             r = d[key](r)
         return r
 
@@ -64,17 +67,24 @@ if __name__ == '__main__':
     src_session = sessionmaker(bind=src_engine)()
     dst_session = sessionmaker(bind=dst_engine)()
 
-    for src_tn in src_meta.tables:
-        src_table = src_meta.tables[src_tn]
+    src_tables = src_meta.tables
+
+    for src_tn in src_tables:
         if src_tn in converters:
-            schema_convert = pipe_functions(converters[src_tn], 'table')
-            dst_table = schema_convert(src_table).tometadata(dst_meta)
+            converter = partial(pipe_converters, src_tables, src_tn)
+            get_query = converter('query')
+            convert_table = converter('table')
+            convert_record = converter('record')
+
+            src_table = src_tables[src_tn]
+            dst_table = convert_table(src_table).tometadata(dst_meta)
             dst_table.create()
-            dst_session.commit()
-            for r in src_session.query(src_table).all():
+
+            src_query = get_query(src_table).select()
+
+            for r in src_session.query(src_query).all():
                 src_record = r._asdict()
-                record_convert = pipe_functions(converters[src_tn], 'record')
-                dst_record = record_convert(src_record)
+                dst_record = convert_record(src_record)
                 ins = dst_table.insert(values=dst_record)
                 dst_session.execute(ins)
             dst_session.commit()
