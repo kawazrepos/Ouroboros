@@ -118,3 +118,32 @@ def rename_columns(maps):
         return {'query': _query, 'table': _table, 'record': _record}
 
     return _
+
+
+
+def join_tables(right_table_name, left_key, right_key):
+    def _(tables, src_tn):
+        def _query(query):
+            right_table = tables[right_table_name]
+            return query.join(right_table, query.columns[left_key] == right_table.columns[right_key])
+
+        def _table(table):
+            left_table = table
+            right_table = tables[right_table_name]
+
+            new_table = Table(left_table.name, MetaData())
+
+            for c in left_table.columns:
+                new_table.append_column(_copy_column(c))
+
+            for c in right_table.columns:
+                new_table.append_column(_copy_column(c))
+
+            return new_table
+
+        def _record(record):
+            return record
+
+        return {'query': _query, 'table': _table, 'record': _record}
+
+    return _
