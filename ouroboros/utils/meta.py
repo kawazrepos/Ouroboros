@@ -1,5 +1,6 @@
 __author__ = 'tanix'
 
+import copy
 from sqlalchemy.schema import Column, Table, MetaData
 from sqlalchemy.sql.elements import quoted_name
 
@@ -16,15 +17,15 @@ def _copy_column(column):
 def _set_schema_name(s, name):
     s.name = quoted_name(name, s.kwargs.pop('quote', None))
 
-def _nop(t):
-    return t
+def _copy(t):
+    return copy.copy(t)
 
 def id():
     def _id_table(table):
         return _copy_table(table)
 
     def _id_record(record):
-        return _nop(record)
+        return _copy(record)
 
     return {'table': _id_table, 'record': _id_record}
 
@@ -35,7 +36,7 @@ def rename_table(name):
         return t
 
     def _rename_record(record):
-        return _nop(record)
+        return _copy(record)
 
     return {'table': _rename_table, 'record': _rename_record}
 
@@ -84,3 +85,4 @@ def rename_columns(maps):
         return r
 
     return {'table': _rename_columns_table, 'record': _rename_columns_record}
+
