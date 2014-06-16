@@ -1,5 +1,6 @@
 __author__ = 'tanix'
 
+import copy
 from sqlalchemy.schema import Column, Table, MetaData
 from sqlalchemy.sql.elements import quoted_name
 
@@ -16,71 +17,133 @@ def _copy_column(column):
 def _set_schema_name(s, name):
     s.name = quoted_name(name, s.kwargs.pop('quote', None))
 
-def _nop(t):
-    return t
+def _copy(t):
+    return copy.copy(t)
 
 def id():
-    def _id_table(table):
-        return _copy_table(table)
+    def _(tables, src_tn):
+        def _query(query):
+            return query
 
-    def _id_record(record):
-        return _nop(record)
+        def _table(table):
+            return _copy_table(table)
 
-    return {'table': _id_table, 'record': _id_record}
+        def _record(record):
+            return _copy(record)
 
-def rename_table(name):
-    def _rename_table(table):
-        t = _copy_table(table)
-        _set_schema_name(t, name)
-        return t
+        return {'query': _query, 'table': _table, 'record': _record}
 
-    def _rename_record(record):
-        return _nop(record)
+    return _
 
-    return {'table': _rename_table, 'record': _rename_record}
+
+
+def rename_table(dst_name):
+    def _(tables, src_tn):
+        def _query(query):
+            return query
+
+        def _table(table):
+            t = _copy_table(table)
+            _set_schema_name(t, dst_name)
+            return t
+
+        def _record(record):
+            return _copy(record)
+
+        return {'query': _query, 'table': _table, 'record': _record}
+
+    return _
+
+
 
 def exclude_columns(columns):
-    def _exclude_columns_table(table):
-        new_table = Table(table.name, MetaData())
+    def _(tables, src_tn):
+        def _query(query):
+            return query
 
-        for c in table.columns:
-            if c.name not in columns:
-                new_table.append_column(c.copy())
-        return new_table
+        def _table(table):
+            src_table = table
+            new_table = Table(src_table.name, MetaData())
 
-    def _exclude_columns_record(record):
-        r = dict()
-        for n in record.keys():
-            if n not in columns:
-                r[n] = record[n]
-        return r
+            for c in src_table.columns:
+                if c.name not in columns:
+                    new_table.append_column(c.copy())
+            return new_table
 
-    return {'table': _exclude_columns_table, 'record': _exclude_columns_record}
+        def _record(record):
+            r = dict()
+            for n in record.keys():
+                if n not in columns:
+                    r[n] = record[n]
+            return r
+
+        return {'query': _query, 'table': _table, 'record': _record}
+
+    return _
+
+
 
 def rename_columns(maps):
     src_columns = maps.keys()
-    def _rename_columns_table(table):
-        new_table = Table(table.name, MetaData())
 
-        for c in table.columns:
-            renamed_column = c.copy()
-            if c.name in src_columns:
-                renamed_column.name = maps[c.name]
-            new_table.append_column(renamed_column)
+    def _(tables, src_tn):
+        def _query(query):
+            return query
 
-        return new_table
+        def _table(table):
+            src_table = table
+            new_table = Table(src_table.name, MetaData())
 
-    def _rename_columns_record(record):
-        r = dict()
-        for n in record.keys():
-            r[n] = record[n]
+            for c in src_table.columns:
+                renamed_column = c.copy()
+                if c.name in src_columns:
+                    renamed_column.name = maps[c.name]
+                new_table.append_column(renamed_column)
 
-            # Bug?: SQLAlchemy raises an error in insertion of a record with renamed columns
-            #if n in src_columns:
-            #    r[maps[n]] = record[n]
-            #else:
-            #    r[n] = record[n]
+            return new_table
 
-        return r
+        def _record(record):
+            r = dict()
+            for n in record.keys():
+                r[n] = record[n]
 
-    return {'table': _rename_columns_table, 'record': _rename_columns_record}
+                # Bug?: SQLAlchemy raises an error in insertion of a record with renamed columns
+                #if n in src_columns:
+                #    r[maps[n]] = record[n]
+                #else:
+                #    r[n] = record[n]
+
+            return r
+
+        return {'query': _query, 'table': _table, 'record': _record}
+
+    return _
+
+
+
+def join_tables(right_table_name, left_key, right_key):
+    def _(tables, src_tn):
+        def _query(query):
+            right_table = tables[right_table_name]
+            return query.join(right_table, query.columns[left_key] == right_table.columns[right_key])
+
+        def _table(table):
+            left_table = table
+            right_table = tables[right_table_name]
+
+            new_table = Table(left_table.name, MetaData())
+
+            for c in left_table.columns:
+                new_table.append_column(_copy_column(c))
+
+            for c in right_table.columns:
+                new_table.append_column(_copy_column(c))
+
+            return new_table
+
+        def _record(record):
+            return record
+
+        return {'query': _query, 'table': _table, 'record': _record}
+
+    return _
