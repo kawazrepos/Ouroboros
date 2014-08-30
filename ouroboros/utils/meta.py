@@ -20,7 +20,7 @@ def copy_column(column):
     """
     return Column(column.name, column.type)
 
-def _set_schema_name(s, name):
+def set_schema_name(s, name):
     s.name = quoted_name(name, s.kwargs.pop('quote', None))
 
 def deep_copy(t):
@@ -50,7 +50,7 @@ def rename_table(dst_name):
 
         def _table(table):
             t = copy_table(table)
-            _set_schema_name(t, dst_name)
+            set_schema_name(t, dst_name)
             return t
 
         def _record(record):

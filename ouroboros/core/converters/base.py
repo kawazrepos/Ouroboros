@@ -4,7 +4,7 @@
 #
 __author__ = 'giginet'
 
-from ouroboros.utils.meta import copy_table, deep_copy
+from ouroboros.utils.meta import copy_table, deep_copy, set_schema_name
 
 class BaseConverter(object):
     """
@@ -14,7 +14,7 @@ class BaseConverter(object):
     src_table_name = None
     # 移行先のテーブル名
     dst_table_name = None
-    # 消去用カラム
+    # 無視するカラム
     exclude_columns = ()
     # 変更するカラムをtupleで渡す
     # (('before', 'after'), ())
@@ -33,7 +33,12 @@ class BaseConverter(object):
         return query
 
     def table(self, table):
-        return copy_table(table)
+        new_table = copy_table(table)
+        # dst_table_nameが別に設定されていたらリネーム
+        if not self.src_table_name == self.dst_table_name:
+            set_schema_name(new_table, self.dst_table_name)
+        return new_table
 
     def record(self, record):
-        return deep_copy(record)
+        new_records = {key: value for key, value in record.items() if not key in self.exclude_columns}
+        return new_records
