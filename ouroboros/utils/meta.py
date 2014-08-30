@@ -5,6 +5,9 @@ from sqlalchemy.schema import Column, Table, MetaData
 from sqlalchemy.sql.elements import quoted_name
 
 def _copy_table(table):
+    """
+     渡されたテーブルをコピーします
+    """
     ret_table = Table(table.name, MetaData())
     for c in table.columns:
         ret_table.append_column(_copy_column(c))
@@ -12,6 +15,9 @@ def _copy_table(table):
     return ret_table
 
 def _copy_column(column):
+    """
+    渡されたカラムをコピーします
+    """
     return Column(column.name, column.type)
 
 def _set_schema_name(s, name):

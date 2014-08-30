@@ -1,9 +1,5 @@
-from functools import partial
-
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.schema import MetaData
 from ouroboros.utils.meta import id, rename_table, exclude_columns, rename_columns, join_tables
+from ouroboros.core.migrators import Migrator
 
 converters = {
     'auth_group': [id()],
@@ -60,47 +56,7 @@ converters = {
                   exclude_columns(['tag'])]
 }
 
-def pipe_converters(tables, src_tn, key):
-    def piped(x):
-        r = x
-        for o in converters[src_tn]:
-            d = o(tables, src_tn)
-            r = d[key](r)
-        return r
-
-    return piped
-
 
 if __name__ == '__main__':
-
-    src_engine = create_engine('sqlite:///db/kawaz.db')
-    dst_engine = create_engine('sqlite:///db/kawaz3.db', echo=True)
-
-    src_meta = MetaData(bind=src_engine)
-    src_meta.reflect()
-    dst_meta = MetaData(bind=dst_engine)
-
-    src_session = sessionmaker(bind=src_engine)()
-    dst_session = sessionmaker(bind=dst_engine)()
-
-    src_tables = src_meta.tables
-
-    for src_tn in src_tables:
-        if src_tn in converters:
-            converter = partial(pipe_converters, src_tables, src_tn)
-            get_query = converter('query')
-            convert_table = converter('table')
-            convert_record = converter('record')
-
-            src_table = src_tables[src_tn]
-            dst_table = convert_table(src_table).tometadata(dst_meta)
-            dst_table.create()
-
-            src_query = get_query(src_table).select()
-
-            for r in src_session.query(src_query).all():
-                src_record = r._asdict()
-                dst_record = convert_record(src_record)
-                ins = dst_table.insert(values=dst_record)
-                dst_session.execute(ins)
-            dst_session.commit()
+    migrator = Migrator(converters, 'sqlite:///db/kawaz.db', 'sqlite:///db/kawaz3.db')
+    migrator.migrate()
