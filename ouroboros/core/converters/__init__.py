@@ -75,8 +75,82 @@ class EventAttendeeConverter(BaseConverter):
         ('user_id', 'persona_id'),
     )
 
+
+class PersonaConverter(BaseConverter):
+    src_table_name = 'profiles_profile'
+    dst_table_name = 'personas_persona'
+    rename_columns = (
+        ('mood', 'quotes'),
+        ('icon', 'avatar'),
+        ('sex', 'gender')
+    )
+
+
+class AccountConverter(BaseConverter):
+    src_table_name = 'profiles_service'
+    dst_table_name = 'profiles_account'
+
+
+class ProfileConverter(BaseConverter):
+    src_table_name = 'profiles_profile'
+    exclude_columns = (
+        'nickname',
+        'mood',
+        'icon',
+        'sex',
+        'location',
+        'twitter_token'
+    )
+
+
+class ProfileSkillConverter(BaseConverter):
+    src_table_name = 'profiles_profile_skills'
+
+
+class ProjectConverter(BaseConverter):
+    # Add tracker, repository
+    src_table_name = 'projects_project'
+    exclude_columns = (
+        'permission',
+        'body_markup_type',
+        '_body_rendered',
+        'updated_by_id',
+        'group_id',
+        'publish_at',
+        'publish_at_date',
+        'bugwaz_id'
+    )
+    rename_columns = (
+        ('author_id', 'administrator_id'),
+    )
+
+class ProjectMemberConverter(BaseConverter):
+    src_table_name = 'projects_project_members'
+    rename_columns =  (
+        ('user_id', 'persona_id'),
+    )
+
+class StarConverter(BaseConverter):
+    src_table_name = 'star_star'
+    dst_table_name = 'stars_star'
+    rename_columns = (
+        ('comment', 'quote'),
+    )
+
+
 converters = (
     AnnouncementConverter,
     AttachmentMaterialConverter,
-    EventConverter
+    BlogCategoryConverter,
+    BlogEntryConverter,
+    CommentConverter,
+    EventConverter,
+    EventAttendeeConverter,
+    PersonaConverter,
+    AccountConverter,
+    ProfileConverter,
+    ProfileSkillConverter,
+    ProjectConverter,
+    ProjectMemberConverter,
+    StarConverter
 )
