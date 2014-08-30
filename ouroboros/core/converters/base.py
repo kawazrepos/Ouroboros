@@ -36,10 +36,14 @@ class BaseConverter(object):
     def table(self, table):
         src_table = table
         new_table = Table(src_table.name, MetaData())
+        rename_dict = dict(self.rename_columns)
+        # 不要カラムの削除
         for c in src_table.columns:
             if c.name not in self.exclude_columns:
-                new_table.append_column(c.copy())
-        return new_table
+                copied_column = c.copy()
+                if c.name in rename_dict.keys():
+                    copied_column.name = rename_dict[c.name]
+                new_table.append_column(copied_column)
         # dst_table_nameが別に設定されていたらリネーム
         if not self.src_table_name == self.dst_table_name:
             set_schema_name(new_table, self.dst_table_name)
@@ -47,4 +51,8 @@ class BaseConverter(object):
 
     def record(self, record):
         new_records = {key: value for key, value in record.items() if not key in self.exclude_columns}
+        # for before, after in self.rename_columns:
+        #     if before in new_records.keys():
+        #         new_records[after] = new_records[before]
+        #         del new_records[before]
         return new_records
