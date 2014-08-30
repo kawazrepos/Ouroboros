@@ -5,6 +5,7 @@
 __author__ = 'giginet'
 
 from ouroboros.utils.meta import copy_table, deep_copy, set_schema_name
+from sqlalchemy.schema import Column, Table, MetaData
 
 class BaseConverter(object):
     """
@@ -33,7 +34,12 @@ class BaseConverter(object):
         return query
 
     def table(self, table):
-        new_table = copy_table(table)
+        src_table = table
+        new_table = Table(src_table.name, MetaData())
+        for c in src_table.columns:
+            if c.name not in self.exclude_columns:
+                new_table.append_column(c.copy())
+        return new_table
         # dst_table_nameが別に設定されていたらリネーム
         if not self.src_table_name == self.dst_table_name:
             set_schema_name(new_table, self.dst_table_name)

@@ -19,9 +19,10 @@ class Migrator(object):
     dst_path: 移行先のDBのパスを追加します
     """
 
-    def __init__(self, converters, src_path, dst_path):
+    def __init__(self, converters, src_path, dst_path, config={}):
+        self.config = config
         self.src_engine = create_engine(src_path)
-        self.dst_engine = create_engine(dst_path, echo=True)
+        self.dst_engine = create_engine(dst_path, echo=self.config.get('verbose', False))
 
         self.converters = converters
 
