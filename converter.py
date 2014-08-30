@@ -56,7 +56,8 @@ converters = {
                   exclude_columns(['tag'])]
 }
 
+from ouroboros.core.converters.moves import AuthGroupConverter
 
 if __name__ == '__main__':
-    migrator = Migrator(converters, 'sqlite:///db/kawaz.db', 'sqlite:///db/kawaz3.db')
+    migrator = Migrator((AuthGroupConverter,), 'sqlite:///db/kawaz.db', 'sqlite:///db/kawaz3.db')
     migrator.migrate()

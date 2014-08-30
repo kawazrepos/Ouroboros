@@ -4,17 +4,17 @@ import copy
 from sqlalchemy.schema import Column, Table, MetaData
 from sqlalchemy.sql.elements import quoted_name
 
-def _copy_table(table):
+def copy_table(table):
     """
      渡されたテーブルをコピーします
     """
     ret_table = Table(table.name, MetaData())
     for c in table.columns:
-        ret_table.append_column(_copy_column(c))
+        ret_table.append_column(copy_column(c))
 
     return ret_table
 
-def _copy_column(column):
+def copy_column(column):
     """
     渡されたカラムをコピーします
     """
@@ -23,7 +23,7 @@ def _copy_column(column):
 def _set_schema_name(s, name):
     s.name = quoted_name(name, s.kwargs.pop('quote', None))
 
-def _copy(t):
+def deep_copy(t):
     return copy.copy(t)
 
 def id():
@@ -32,10 +32,10 @@ def id():
             return query
 
         def _table(table):
-            return _copy_table(table)
+            return copy_table(table)
 
         def _record(record):
-            return _copy(record)
+            return deep_copy(record)
 
         return {'query': _query, 'table': _table, 'record': _record}
 
@@ -49,12 +49,12 @@ def rename_table(dst_name):
             return query
 
         def _table(table):
-            t = _copy_table(table)
+            t = copy_table(table)
             _set_schema_name(t, dst_name)
             return t
 
         def _record(record):
-            return _copy(record)
+            return deep_copy(record)
 
         return {'query': _query, 'table': _table, 'record': _record}
 
@@ -140,10 +140,10 @@ def join_tables(right_table_name, left_key, right_key):
             new_table = Table(left_table.name, MetaData())
 
             for c in left_table.columns:
-                new_table.append_column(_copy_column(c))
+                new_table.append_column(copy_column(c))
 
             for c in right_table.columns:
-                new_table.append_column(_copy_column(c))
+                new_table.append_column(copy_column(c))
 
             return new_table
 
