@@ -4,8 +4,7 @@
 #
 __author__ = 'giginet'
 
-from ouroboros.utils.meta import copy_table
-from ouroboros.core.converters.commands.base import BaseCommand
+from ouroboros.utils.meta import copy_table, deep_copy
 
 class BaseConverter(object):
     """
@@ -30,9 +29,11 @@ class BaseConverter(object):
             # src_table_nameにそのままコピーする
             self.dst_table_name = self.src_table_name
 
-    def convert(self, table):
-        pass
+    def query(self, query):
+        return query
 
-    def get_command_cls(self):
-        # 恒久的にBaseCommandクラスを返す
-        return BaseCommand
+    def table(self, table):
+        return copy_table(table)
+
+    def record(self, record):
+        return deep_copy(record)
