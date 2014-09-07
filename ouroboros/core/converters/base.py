@@ -69,12 +69,13 @@ class PortConverter(BaseConverter):
         return new_records
 
 
-class JoinConverter(BaseConverter):
+class JoinConverter(PortConverter):
     right_table_name = None
     left_key = None
     right_key = None
 
     def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         if not self.right_table_name:
             raise Exception("JoinConverter must have 'right_table_name'.")
         if not self.left_key or not self.right_key:
@@ -83,7 +84,8 @@ class JoinConverter(BaseConverter):
 
     def query(self, query):
         right_table = self.tables[self.right_table_name]
-        return query.join(right_table, query.columns[self.left_key] == right_table.columns[self.right_key])
+        query = query.join(right_table, query.columns[self.left_key] == right_table.columns[self.right_key])
+        return super().query(query)
 
     def table(self, table):
         left_table = table
@@ -96,4 +98,4 @@ class JoinConverter(BaseConverter):
 
         for column in right_table.columns:
             new_table.append_column(copy_column(column))
-        return new_table
+        return super().table(new_table)

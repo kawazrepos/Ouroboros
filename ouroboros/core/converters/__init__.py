@@ -76,6 +76,12 @@ class EventAttendeeConverter(PortConverter):
         ('user_id', 'persona_id'),
     )
 
+profile_deprecated_columns = (
+        'location',
+        'twitter_token',
+        'remarks_markup_type',
+        '_remarks_rendered',
+    )
 
 class PersonaConverter(JoinConverter):
     src_table_name = 'auth_user'
@@ -88,6 +94,16 @@ class PersonaConverter(JoinConverter):
         ('icon', 'avatar'),
         ('sex', 'gender')
     )
+    exclude_columns = list(profile_deprecated_columns) + [
+        'pub_state',
+        'birthday',
+        'place',
+        'url',
+        'remarks',
+        'user_id',
+        'created_at',
+        'updated_at',
+    ]
 
 
 class AccountConverter(PortConverter):
@@ -100,16 +116,12 @@ class ProfileConverter(PortConverter):
     rename_columns = (
         ('user_id', 'id'),
     )
-    exclude_columns = (
+    exclude_columns = list(profile_deprecated_columns) + [
         'nickname',
         'mood',
         'icon',
-        'sex',
-        'location',
-        'twitter_token'
-        'remarks_markup_type',
-        '_remarks_rendered'
-    )
+        'sex'
+    ]
 
 
 class ProfileSkillConverter(PortConverter):
