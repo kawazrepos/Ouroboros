@@ -21,6 +21,9 @@ class AnnouncementConverter(PortConverter):
 class AttachmentMaterialConverter(PortConverter):
     src_table_name = 'commons_material'
     dst_table_name = 'attachments_material'
+    rename_columns = (
+        ('file', 'content_file'),
+    )
     exclude_columns = (
         'pub_state',
         'license',
@@ -28,7 +31,7 @@ class AttachmentMaterialConverter(PortConverter):
         'body',
         'project_id',
         'pv',
-        'update_at'
+        'updated_at'
     )
 
 
@@ -103,6 +106,8 @@ class PersonaConverter(JoinConverter):
         'user_id',
         'created_at',
         'updated_at',
+        'is_superuser',
+        'is_staff'
     ]
 
 
@@ -157,21 +162,24 @@ class StarConverter(PortConverter):
     rename_columns = (
         ('comment', 'quote'),
     )
+    exclude_columns = (
+        'tag',
+    )
 
 
 converters = (
     AnnouncementConverter,
-    AttachmentMaterialConverter,
+    # AttachmentMaterialConverter,
     BlogCategoryConverter,
     BlogEntryConverter,
     CommentConverter,
     EventConverter,
     EventAttendeeConverter,
-    PersonaConverter,
+    # PersonaConverter,
     AccountConverter,
-    ProfileConverter,
+    # ProfileConverter,
     ProfileSkillConverter,
-    ProjectConverter,
+    # ProjectConverter,
     ProjectMemberConverter,
     StarConverter,
 )

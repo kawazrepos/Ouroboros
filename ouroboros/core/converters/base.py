@@ -34,6 +34,7 @@ class BaseConverter(object):
 class PortConverter(BaseConverter):
 
     def __init__(self, **kwargs):
+        self.tables = kwargs['tables']
         if not self.src_table_name:
             raise Exception("PortConverter must have `src_table_name`.")
         if not self.dst_table_name:
@@ -62,10 +63,10 @@ class PortConverter(BaseConverter):
 
     def record(self, record):
         new_records = {key: value for key, value in record.items() if not key in self.exclude_columns}
-        # for before, after in self.rename_columns:
-        #     if before in new_records.keys():
-        #         new_records[after] = new_records[before]
-        #         del new_records[before]
+        for before, after in self.rename_columns:
+            if before in new_records.keys():
+                new_records[after] = new_records[before]
+                del new_records[before]
         return new_records
 
 
@@ -80,7 +81,6 @@ class JoinConverter(PortConverter):
             raise Exception("JoinConverter must have 'right_table_name'.")
         if not self.left_key or not self.right_key:
             raise Exception("JoinConverter must have 'left/right_key'.")
-        self.tables = kwargs['tables']
 
     def query(self, query):
         right_table = self.tables[self.right_table_name]

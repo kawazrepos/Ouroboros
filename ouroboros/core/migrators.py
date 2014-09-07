@@ -33,6 +33,7 @@ class Migrator(object):
         src_meta = MetaData(bind=self.src_engine)
         src_meta.reflect()
         dst_meta = MetaData(bind=self.dst_engine)
+        dst_meta.reflect()
 
         src_session = sessionmaker(bind=self.src_engine)()
         dst_session = sessionmaker(bind=self.dst_engine)()
@@ -43,6 +44,8 @@ class Migrator(object):
             src_tn = converter_cls.src_table_name
             if src_tn in src_tables:
                 converter = converter_cls(tables=src_tables)
+                if converter.dst_table_name in dst_meta.tables:
+                    dst_meta.tables[converter.dst_table_name].drop()
                 src_table = src_tables[src_tn]
                 dst_table = converter.table(src_table).tometadata(dst_meta)
                 dst_table.create()
