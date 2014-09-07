@@ -4,7 +4,7 @@
 #
 __author__ = 'giginet'
 
-from ouroboros.utils.meta import copy_table, deep_copy, set_schema_name
+from ouroboros.utils.meta import copy_table, copy_column, deep_copy, set_schema_name
 from sqlalchemy.schema import Column, Table, MetaData
 
 class BaseConverter(object):
@@ -21,10 +21,21 @@ class BaseConverter(object):
     # (('before', 'after'), ())
     rename_columns = ()
 
+    def query(self, query):
+        return query
 
-    def __init__(self):
+    def table(self, table):
+        return table
+
+    def record(self, record):
+        return record
+
+
+class PortConverter(BaseConverter):
+
+    def __init__(self, **kwargs):
         if not self.src_table_name:
-            raise Exception("Converter must have `src_table_name`.")
+            raise Exception("PortConverter must have `src_table_name`.")
         if not self.dst_table_name:
             # dst_table_nameが明示されてなかったら
             # src_table_nameにそのままコピーする
@@ -56,3 +67,33 @@ class BaseConverter(object):
         #         new_records[after] = new_records[before]
         #         del new_records[before]
         return new_records
+
+
+class JoinConverter(BaseConverter):
+    right_table_name = None
+    left_key = None
+    right_key = None
+
+    def __init__(self, **kwargs):
+        if not self.right_table_name:
+            raise Exception("JoinConverter must have 'right_table_name'.")
+        if not self.left_key or not self.right_key:
+            raise Exception("JoinConverter must have 'left/right_key'.")
+        self.tables = kwargs['tables']
+
+    def query(self, query):
+        right_table = self.tables[self.right_table_name]
+        return query.join(right_table, query.columns[self.left_key] == right_table.columns[self.right_key])
+
+    def table(self, table):
+        left_table = table
+        right_table = self.tables[self.right_table_name]
+
+        new_table = Table(self.src_table_name, MetaData())
+
+        for column in left_table.columns:
+            new_table.append_column(copy_column(column))
+
+        for column in right_table.columns:
+            new_table.append_column(copy_column(column))
+        return new_table

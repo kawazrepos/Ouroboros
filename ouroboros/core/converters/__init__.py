@@ -3,9 +3,10 @@
 # created by giginet on 2014/8/30
 #
 __author__ = 'giginet'
-from .base import BaseConverter
+from .base import PortConverter
+from .base import JoinConverter
 
-class AnnouncementConverter(BaseConverter):
+class AnnouncementConverter(PortConverter):
     src_table_name = 'announcements_announcement'
     exclude_columns = (
         '_body_rendered',
@@ -17,7 +18,7 @@ class AnnouncementConverter(BaseConverter):
     )
 
 
-class AttachmentMaterialConverter(BaseConverter):
+class AttachmentMaterialConverter(PortConverter):
     src_table_name = 'commons_material'
     dst_table_name = 'attachments_material'
     exclude_columns = (
@@ -31,11 +32,11 @@ class AttachmentMaterialConverter(BaseConverter):
     )
 
 
-class BlogCategoryConverter(BaseConverter):
+class BlogCategoryConverter(PortConverter):
     src_table_name = 'blogs_category'
 
 
-class BlogEntryConverter(BaseConverter):
+class BlogEntryConverter(PortConverter):
     src_table_name = 'blogs_entry'
     exclude_columns = (
         'body_markup_type',
@@ -44,7 +45,7 @@ class BlogEntryConverter(BaseConverter):
     )
 
 
-class CommentConverter(BaseConverter):
+class CommentConverter(PortConverter):
     src_table_name = 'mcomments_markitupcomment'
     dst_table_name = 'django_comments'
     exclude_columns = (
@@ -53,7 +54,7 @@ class CommentConverter(BaseConverter):
     )
 
 
-class EventConverter(BaseConverter):
+class EventConverter(PortConverter):
     src_table_name = 'events_event'
     exclude_columns = (
         'location',
@@ -68,16 +69,19 @@ class EventConverter(BaseConverter):
     )
 
 
-class EventAttendeeConverter(BaseConverter):
-    src_table_name = 'events_event_attendees'
-    dst_table_name = 'events_event_members'
+class EventAttendeeConverter(PortConverter):
+    src_table_name = 'events_event_members'
+    dst_table_name = 'events_event_attendees'
     rename_columns = (
         ('user_id', 'persona_id'),
     )
 
 
-class PersonaConverter(BaseConverter):
-    src_table_name = 'profiles_profile'
+class PersonaConverter(JoinConverter):
+    src_table_name = 'auth_user'
+    right_table_name = 'profiles_profile'
+    left_key = 'id'
+    right_key = 'user_id'
     dst_table_name = 'personas_persona'
     rename_columns = (
         ('mood', 'quotes'),
@@ -86,13 +90,16 @@ class PersonaConverter(BaseConverter):
     )
 
 
-class AccountConverter(BaseConverter):
+class AccountConverter(PortConverter):
     src_table_name = 'profiles_service'
     dst_table_name = 'profiles_account'
 
 
-class ProfileConverter(BaseConverter):
+class ProfileConverter(PortConverter):
     src_table_name = 'profiles_profile'
+    rename_columns = (
+        ('user_id', 'id'),
+    )
     exclude_columns = (
         'nickname',
         'mood',
@@ -100,14 +107,16 @@ class ProfileConverter(BaseConverter):
         'sex',
         'location',
         'twitter_token'
+        'remarks_markup_type',
+        '_remarks_rendered'
     )
 
 
-class ProfileSkillConverter(BaseConverter):
+class ProfileSkillConverter(PortConverter):
     src_table_name = 'profiles_profile_skills'
 
 
-class ProjectConverter(BaseConverter):
+class ProjectConverter(PortConverter):
     # Add tracker, repository
     src_table_name = 'projects_project'
     exclude_columns = (
@@ -124,13 +133,13 @@ class ProjectConverter(BaseConverter):
         ('author_id', 'administrator_id'),
     )
 
-class ProjectMemberConverter(BaseConverter):
+class ProjectMemberConverter(PortConverter):
     src_table_name = 'projects_project_members'
     rename_columns =  (
         ('user_id', 'persona_id'),
     )
 
-class StarConverter(BaseConverter):
+class StarConverter(PortConverter):
     src_table_name = 'star_star'
     dst_table_name = 'stars_star'
     rename_columns = (
@@ -152,5 +161,5 @@ converters = (
     ProfileSkillConverter,
     ProjectConverter,
     ProjectMemberConverter,
-    StarConverter
+    StarConverter,
 )

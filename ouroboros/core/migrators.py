@@ -42,7 +42,7 @@ class Migrator(object):
         for converter_cls in self.converters:
             src_tn = converter_cls.src_table_name
             if src_tn in src_tables:
-                converter = converter_cls()
+                converter = converter_cls(tables=src_tables)
                 src_table = src_tables[src_tn]
                 dst_table = converter.table(src_table).tometadata(dst_meta)
                 dst_table.create()
@@ -55,4 +55,6 @@ class Migrator(object):
                     ins = dst_table.insert(values=dst_record)
                     dst_session.execute(ins)
                 dst_session.commit()
+            else:
+                print("Source table {} is not found".format(src_tn))
 
