@@ -47,7 +47,6 @@ class Migrator(object):
                 src_table = src_tables[src_tn]
                 dst_table = converter.table(src_table)
                 dst_table.create(checkfirst=True)
-                # dst_session.commit()
 
                 src_query = converter.query(src_table).select()
                 dl = dst_table.delete()
@@ -58,7 +57,6 @@ class Migrator(object):
                     src_record = r._asdict()
                     dst_record = converter.record(src_record)
 
-                    dst_query = converter.query(dst_table).select()
                     ins = dst_table.insert().values(dst_record)
                     dst_session.execute(ins)
                 dst_session.commit()

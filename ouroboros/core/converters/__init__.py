@@ -33,6 +33,9 @@ class AttachmentMaterialConverter(PortConverter):
         'pv',
         'updated_at'
     )
+    default_values = (
+        ('slug', lambda record: record['file']),
+    )
 
 
 class BlogCategoryConverter(PortConverter):
@@ -173,7 +176,7 @@ class StarConverter(PortConverter):
 
 converters = (
     AnnouncementConverter,
-    # AttachmentMaterialConverter,
+    AttachmentMaterialConverter,
     BlogCategoryConverter,
     BlogEntryConverter,
     CommentConverter,

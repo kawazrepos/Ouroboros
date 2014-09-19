@@ -13,14 +13,27 @@ class BaseConverter(object):
     """
     # 移行元のテーブル名
     src_table_name = None
+
     # 移行先のテーブル名
     dst_table_name = None
-    # 無視するカラム
+
+    # 無視するカラム名
     exclude_columns = ()
+
     # 変更するカラムをtupleで渡す
     # (('before', 'after'), ())
     rename_columns = ()
+
+    # 新しいカラムに与えるColumnのパラメータを指定できます
+    # (('column_name': {'nullable': True}),)
     new_columns = ()
+
+    # あるカラムの初期値を設定できます
+    # 関数を渡すと、移行前のレコードの値が引数として渡ります
+    # (
+    #   ('column0': 'default_value'),
+    #   ('column1': lambda old_record: old_record['another_column']),
+    # )
     default_values = ()
 
 
@@ -85,7 +98,10 @@ class PortConverter(BaseConverter):
         # デフォルト値の設定
         default_values_dict = dict(self.default_values)
         for k, v in default_values_dict.items():
-            new_records[k] = v
+            if callable(v):
+                new_records[k] = v(new_records)
+            else:
+                new_records[k] = v
         return new_records
 
 
