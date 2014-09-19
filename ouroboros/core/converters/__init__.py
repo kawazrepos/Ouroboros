@@ -149,6 +149,10 @@ class ProjectConverter(PortConverter):
     rename_columns = (
         ('author_id', 'administrator_id'),
     )
+    default_values = (
+        ('repository', ''),
+        ('tracker', ''),
+    )
 
 class ProjectMemberConverter(PortConverter):
     src_table_name = 'projects_project_members'
@@ -179,7 +183,7 @@ converters = (
     AccountConverter,
     # ProfileConverter,
     ProfileSkillConverter,
-    # ProjectConverter,
+    ProjectConverter,
     ProjectMemberConverter,
     StarConverter,
 )

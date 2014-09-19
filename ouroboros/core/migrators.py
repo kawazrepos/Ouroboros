@@ -43,19 +43,23 @@ class Migrator(object):
         for converter_cls in self.converters:
             src_tn = converter_cls.src_table_name
             if src_tn in src_tables:
-                converter = converter_cls(tables=src_tables)
-                if converter.dst_table_name in dst_meta.tables:
-                    dst_meta.tables[converter.dst_table_name].drop()
+                converter = converter_cls(tables=src_tables, dst_meta=dst_meta)
                 src_table = src_tables[src_tn]
-                dst_table = converter.table(src_table).tometadata(dst_meta)
-                dst_table.create()
+                dst_table = converter.table(src_table)
+                dst_table.create(checkfirst=True)
+                # dst_session.commit()
 
                 src_query = converter.query(src_table).select()
+                dl = dst_table.delete()
+                dst_session.execute(dl)
+                dst_meta.reflect()
 
                 for r in src_session.query(src_query).all():
                     src_record = r._asdict()
                     dst_record = converter.record(src_record)
-                    ins = dst_table.insert(values=dst_record)
+
+                    dst_query = converter.query(dst_table).select()
+                    ins = dst_table.insert().values(dst_record)
                     dst_session.execute(ins)
                 dst_session.commit()
             else:
