@@ -90,10 +90,10 @@ profile_deprecated_columns = (
     )
 
 class PersonaConverter(JoinConverter):
-    src_table_name = 'auth_user'
-    right_table_name = 'profiles_profile'
-    left_key = 'id'
-    right_key = 'user_id'
+    src_table_name = 'profiles_profile'
+    right_table_name = 'auth_user'
+    left_key = 'user_id'
+    right_key = 'id'
     dst_table_name = 'personas_persona'
     rename_columns = (
         ('mood', 'quotes'),
@@ -112,6 +112,9 @@ class PersonaConverter(JoinConverter):
         'is_superuser',
         'is_staff'
     ]
+    default_values = (
+        ('role', 'children'),
+    )
 
 
 class AccountConverter(PortConverter):
@@ -121,9 +124,6 @@ class AccountConverter(PortConverter):
 
 class ProfileConverter(PortConverter):
     src_table_name = 'profiles_profile'
-    rename_columns = (
-        ('user_id', 'id'),
-    )
     exclude_columns = list(profile_deprecated_columns) + [
         'nickname',
         'mood',
@@ -182,9 +182,9 @@ converters = (
     CommentConverter,
     EventConverter,
     EventAttendeeConverter,
-    # PersonaConverter,
+    PersonaConverter,
     AccountConverter,
-    # ProfileConverter,
+    ProfileConverter,
     ProfileSkillConverter,
     ProjectConverter,
     ProjectMemberConverter,

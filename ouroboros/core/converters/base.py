@@ -59,20 +59,12 @@ class PortConverter(BaseConverter):
             # src_table_nameにそのままコピーする
             self.dst_table_name = self.src_table_name
 
-    def get_or_create_table(self, tablename):
-        # if tablename in self.dst_meta.tables:
-        #     return self.dst_meta.tables[tablename], False
-        return Table(tablename, self.dst_meta), True
-
     def query(self, query):
         return query
 
     def table(self, table):
-        src_table = table
         # すでに定義済みのテーブルを読み込む
-        dst_table = Table(self.dst_table_name, self.dst_meta, autoload=True)
-
-        return dst_table
+        return Table(self.dst_table_name, self.dst_meta, autoload=True)
 
     def record(self, record):
         new_records = {key: value for key, value in record.items() if not key in self.exclude_columns}
@@ -105,9 +97,4 @@ class JoinConverter(PortConverter):
     def query(self, query):
         right_table = self.tables[self.right_table_name]
         query = query.join(right_table, query.columns[self.left_key] == right_table.columns[self.right_key])
-        return super().query(query)
-
-    def record(self, record):
-        records = super().record(record)
-        print(records)
-        return records
+        return query
