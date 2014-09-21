@@ -3,6 +3,7 @@
 # created by giginet on 2014/8/30
 #
 __author__ = 'giginet'
+import re
 from .base import PortConverter
 from .base import JoinConverter
 
@@ -33,8 +34,14 @@ class AttachmentMaterialConverter(PortConverter):
         'pv',
         'updated_at'
     )
+
+    def convert_content_file_path(record):
+        path = record['content_file']
+        return re.sub("storage/commons/(?P<path>.+)", "attachments/\g<path>", path)
+
     default_values = (
         ('slug', lambda record: record['content_file']),
+        ('content_file', convert_content_file_path)
     )
 
 
@@ -112,8 +119,14 @@ class PersonaConverter(JoinConverter):
         'is_superuser',
         'is_staff'
     ]
+
+    def convert_avatar_path(record):
+        path = record['avatar']
+        return re.sub("storage/(?P<path>profiles/.+)", "\g<path>", path)
+
     default_values = (
         ('role', 'children'),
+        ('avatar', convert_avatar_path)
     )
 
 
@@ -180,9 +193,15 @@ class ProjectConverter(PortConverter):
     rename_columns = (
         ('author_id', 'administrator_id'),
     )
+
+    def convert_icon_path(record):
+        path = record['icon']
+        return re.sub("storage/(?P<path>projects/.+)", "\g<path>", path)
+
     default_values = (
         ('repository', ''),
         ('tracker', ''),
+        ('icon', convert_icon_path)
     )
 
 class ProjectMemberConverter(PortConverter):
