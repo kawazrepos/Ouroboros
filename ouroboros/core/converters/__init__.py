@@ -34,7 +34,7 @@ class AttachmentMaterialConverter(PortConverter):
         'updated_at'
     )
     default_values = (
-        ('slug', lambda record: record['file']),
+        ('slug', lambda record: record['content_file']),
     )
 
 

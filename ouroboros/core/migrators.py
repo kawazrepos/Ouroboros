@@ -44,6 +44,7 @@ class Migrator(object):
             src_tn = converter_cls.src_table_name
             if src_tn in src_tables:
                 converter = converter_cls(tables=src_tables, dst_meta=dst_meta)
+                print(converter.src_table_name)
                 src_table = src_tables[src_tn]
                 dst_table = converter.table(src_table)
                 dst_table.create(checkfirst=True)

@@ -69,32 +69,17 @@ class PortConverter(BaseConverter):
 
     def table(self, table):
         src_table = table
-        dst_table, created = self.get_or_create_table(self.dst_table_name)
-        rename_dict = dict(self.rename_columns)
-        # 不要カラムの削除
-        for c in src_table.columns:
-            if c.name not in self.exclude_columns:
-                copied_column = c.copy()
-                if c.name in rename_dict.keys():
-                    copied_column.name = rename_dict[c.name]
-                dst_table.append_column(copied_column)
-        # dst_table_nameが別に設定されていたらリネーム
-        if not self.src_table_name == self.dst_table_name:
-            set_schema_name(dst_table, self.dst_table_name)
-        # attributeを設定
-        new_columns_dict = dict(self.new_columns)
-        for column_name, options in new_columns_dict.items():
-            if column_name in dst_table.c:
-                column = dst_table.c[column_name]
-                for k, v in options.items():
-                    setattr(column, k, v)
+        # すでに定義済みのテーブルを読み込む
+        dst_table = Table(self.dst_table_name, self.dst_meta, autoload=True)
+
         return dst_table
 
     def record(self, record):
         new_records = {key: value for key, value in record.items() if not key in self.exclude_columns}
-        # for before, after in self.rename_columns:
-        #     if before in new_records.keys():
-        #         new_records[after] = new_records[before]
+        for before, after in self.rename_columns:
+            if before in new_records.keys():
+                new_records[after] = new_records[before]
+                del new_records[before]
         # デフォルト値の設定
         default_values_dict = dict(self.default_values)
         for k, v in default_values_dict.items():
@@ -122,15 +107,7 @@ class JoinConverter(PortConverter):
         query = query.join(right_table, query.columns[self.left_key] == right_table.columns[self.right_key])
         return super().query(query)
 
-    def table(self, table):
-        left_table = table
-        right_table = self.tables[self.right_table_name]
-
-        dst_table, created = self.get_or_create_table(self.dst_table_name)
-
-        for column in left_table.columns:
-            dst_table.append_column(copy_column(column))
-
-        for column in right_table.columns:
-            dst_table.append_column(copy_column(column))
-        return super().table(dst_table)
+    def record(self, record):
+        records = super().record(record)
+        print(records)
+        return records
