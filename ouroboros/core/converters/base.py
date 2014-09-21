@@ -29,7 +29,9 @@ class BaseConverter(object):
     new_columns = ()
 
     # あるカラムの初期値を設定できます
-    # 関数を渡すと、移行前のレコードの値が引数として渡ります
+    # 引数に定数血を入れた場合は自動的に定数値が設定されます
+    # 引数にレコードを辞書で取る関数も渡せます
+    # この引数はカラムのリネームと併用した場合、変更適用後のカラム名がキーになっています
     # (
     #   ('column0': 'default_value'),
     #   ('column1': lambda old_record: old_record['another_column']),
@@ -76,7 +78,11 @@ class PortConverter(BaseConverter):
         default_values_dict = dict(self.default_values)
         for k, v in default_values_dict.items():
             if callable(v):
-                new_records[k] = v(new_records)
+                result = v(new_records)
+                if result is None:
+                    # NoneだったらNoneを返す
+                    return None
+                new_records[k] = result
             else:
                 new_records[k] = v
         return new_records

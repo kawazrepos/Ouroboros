@@ -120,6 +120,34 @@ class PersonaConverter(JoinConverter):
 class AccountConverter(PortConverter):
     src_table_name = 'profiles_service'
     dst_table_name = 'profiles_account'
+    rename_columns = (
+        ('account', 'username'),
+        ('service', 'service_id'),
+    )
+
+    def convert_service_id(record):
+        convert_dict = {
+            "skype": 2,
+            "twitter": 1,
+            "mixi": 17,
+            "facebook": 3,
+            "foursquare": 4,
+            "google": 5,
+            "pixiv": 6,
+            "hatena": 7,
+            "xbl": 9,
+            "psn": 10,
+            "dropbox": 8
+        }
+        service_name = record['service_id']
+        if service_name in convert_dict:
+            return convert_dict[service_name]
+        print("service name {} is invalid.".format(service_name))
+        return None
+
+    default_values = (
+        ('service_id', convert_service_id),
+    )
 
 
 class ProfileConverter(PortConverter):

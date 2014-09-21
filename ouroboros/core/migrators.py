@@ -58,8 +58,9 @@ class Migrator(object):
                     src_record = r._asdict()
                     dst_record = converter.record(src_record)
 
-                    ins = dst_table.insert().values(dst_record)
-                    dst_session.execute(ins)
+                    if dst_record: # Noneが返ってきたら無視する
+                        ins = dst_table.insert().values(dst_record)
+                        dst_session.execute(ins)
                 dst_session.commit()
             else:
                 print("Source table {} is not found".format(src_tn))
