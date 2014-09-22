@@ -39,8 +39,16 @@ class AttachmentMaterialConverter(PortConverter):
         path = record['content_file']
         return re.sub("storage/commons/(?P<path>.+)", "attachments/\g<path>", path)
 
+    def convert_slug(record):
+        path = record['content_file']
+        # こっちでもコンバートする
+        converted = re.sub("storage/commons/(?P<path>.+)", "attachments/\g<path>", path)
+        import hashlib
+        # sha1でハッシュ化
+        return hashlib.sha1(converted.encode('utf-8')).hexdigest()
+
     default_values = (
-        ('slug', lambda record: record['content_file']),
+        ('slug', convert_slug),
         ('content_file', convert_content_file_path)
     )
 
