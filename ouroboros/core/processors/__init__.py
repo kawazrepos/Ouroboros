@@ -5,7 +5,9 @@
 __author__ = 'giginet'
 
 from .content_types import ContentTypeProcessor
+from .attachments import AttachmentProcessor
 
 processors = (
     ContentTypeProcessor,
+    AttachmentProcessor,
 )

@@ -54,8 +54,7 @@ class ContentTypeProcessor(BaseProcessor):
                 if src_ct in self.convert_table.keys():
                     # もし、CTの変換先が見つかったら
                     record[column_name] = self.convert_table[src_ct]
-                    update = table.update().values(record)
-                    self.dst_session.execute(update)
+                    self._partial_update(table, record, column_name)
                 else:
                     # もし、CTの変換先が見つからなかったら
                     # そのレコードをdropする
@@ -63,17 +62,6 @@ class ContentTypeProcessor(BaseProcessor):
                     delete = table.delete().where(table.c.id==record['id'])
                     self.dst_session.execute(delete)
             self.dst_session.commit()
-
-    def _search_record(self, records, **kwargs):
-        """
-        レコードの辞書の一覧から条件に当てはまるモノを返す。見つからなかったらNone
-        """
-        for r in records:
-            for k, v in kwargs.items():
-                if not r[k] == v:
-                    break
-                return r
-        return None
 
     def _convert_names(self, app_label, model):
         """
