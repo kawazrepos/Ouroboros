@@ -27,6 +27,7 @@ class BaseProcessor(object):
             for k, v in kwargs.items():
                 if not r[k] == v:
                     break
+            else:
                 return r
         return None
 

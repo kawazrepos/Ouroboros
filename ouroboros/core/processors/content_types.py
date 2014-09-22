@@ -17,6 +17,7 @@ class ContentTypeProcessor(BaseProcessor):
         (('auth', 'user'), ('personas', 'persona')),
         (('commons', 'material'), ('attachments', 'material')),
         (('mcomments', 'markitupcomment'), ('comments', 'comment')),
+        (('star', 'star'), ('stars', 'star')),
     )
     content_type_table_name = 'django_content_type'
 
@@ -37,7 +38,7 @@ class ContentTypeProcessor(BaseProcessor):
 
         # 変換テーブルを作成する
         for src_record in src_records:
-            model, app_label = self._convert_names(src_record['model'], src_record['app_label'])
+            app_label, model = self._convert_names(src_record['app_label'], src_record['model'])
             dst_record = self._search_record(dst_records, model=model, app_label=app_label)
             if dst_record:
                 self.convert_table.update({src_record['id']: dst_record['id']})
