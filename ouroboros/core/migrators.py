@@ -10,6 +10,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.schema import MetaData
 
+from ouroboros.core.processors import processors
+
 class Migrator(object):
     """
     Kawaz2から3へのコンバーターです
@@ -64,4 +66,13 @@ class Migrator(object):
                 dst_session.commit()
             else:
                 print("Source table {} is not found".format(src_tn))
+
+        # プロセッサーで処理をする
+        for processor_cls in processors:
+            print("Process of {}".format(processor_cls.name))
+            processor = processor_cls(src_session=src_session,
+                                      src_meta=src_meta,
+                                      dst_session=dst_session,
+                                      dst_meta=dst_meta)
+            processor.convert()
 
