@@ -132,9 +132,15 @@ class PersonaConverter(JoinConverter):
         path = record['avatar']
         return re.sub("storage/(?P<path>profiles/.+)", "\g<path>", path)
 
+    def convert_nickname(record):
+        if 'nickname' in record:
+            return record['nickname']
+        return record['username']
+
     default_values = (
         ('role', 'children'),
-        ('avatar', convert_avatar_path)
+        ('avatar', convert_avatar_path),
+        ('nickname', convert_nickname)
     )
 
 
