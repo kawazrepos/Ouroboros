@@ -11,10 +11,11 @@ Ouroboros is the database converter from Kawaz2 to Kawaz3.
 セットアップ
 ====================
 
-```sh
-$ pip install -r requirements.txt
-$ python converter.py
-```
+::
+
+  $ pip install -r requirements.txt
+  $ python converter.py
+
 
 変換方法
 ====================
@@ -29,12 +30,13 @@ MySQL（推奨）
 
 `local_settings.py`のENGINEをMySQLに設定済みの物として扱う
 
-```
-$ cd kawaz3rd
-$ python manage.py syncdb
-$ python manage.py loaddata production
-$ python manage.py loaddata debug
-```
+::
+
+  $ cd kawaz3rd
+  $ python manage.py syncdb
+  $ python manage.py loaddata production
+  $ python manage.py loaddata debug
+
 
 
 2. `config.sample.ini`を`config.ini`にコピー
@@ -45,19 +47,21 @@ $ python manage.py loaddata debug
 
 srcには2nd、dstには3rdを指定すべし
 
-```
-[driver]
-src = mysql+pymysql://username:password@localhost/src_dbname?charset=utf8
-dst = mysql+pymysql://username:password@localhost/dst_dbname?charset=utf8
-```
+::
+
+  [driver]
+  src = mysql+pymysql://username:password@localhost/src_dbname?charset=utf8
+  dst = mysql+pymysql://username:password@localhost/dst_dbname?charset=utf8
+  
 
 4. 実行
 ~~~~~~~~~~~~~~~~~
 
-```
-$ cd ouroboros
-$ python converter.py
-```
+::
+  
+  $ cd ouroboros
+  $ python converter.py
+
 
 SQLite3（非推奨）
 --------
@@ -71,21 +75,22 @@ SQLite3（非推奨）
 3. config.iniを設定
 ~~~~~~~~~~~~~~~~~
 
-```
-[driver]
-src = sqlite:///db/kawaz.db
-dst = sqlite:///db/kawaz3.db
+::
 
-```
+  [driver]
+  src = sqlite:///db/kawaz.db
+  dst = sqlite:///db/kawaz3.db
+
 
 4. 以下のコマンドを実行
 ~~~~~~~~~~~~~~~~~~~~
 
 
-```sh
-$ cd ouroboros
-$ python converter.py
-```
+::
+
+  $ cd ouroboros
+  $ python converter.py
+
 
 処理の流れ
 ======================
