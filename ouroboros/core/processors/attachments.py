@@ -30,7 +30,7 @@ class AttachmentProcessor(BaseProcessor):
 
         # 予め、移行後のattachments_materialのレコードを全て辞書化しておく
         attachment_table = self.dst_meta.tables['attachments_material']
-        self.attachment_records = [r._asdict() for r in self.dst_session.query(attachment_table.select()).all()]
+        self.attachment_records = [r._asdict() for r in self.dst_session.query(attachment_table.select().alias('subquery1')).all()]
 
     def convert(self):
         for target in self.targets:
@@ -38,7 +38,7 @@ class AttachmentProcessor(BaseProcessor):
             print("Convert attachment tag of {} in {}".format(column_name, table_name))
             table = self.dst_meta.tables[table_name]
 
-            for r in self.dst_session.query(table.select()).all():
+            for r in self.dst_session.query(table.select().alias('subquery1')).all():
                 record = r._asdict()
                 src_body = record[column_name]
                 def repl(m):

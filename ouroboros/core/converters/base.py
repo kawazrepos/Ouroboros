@@ -5,7 +5,7 @@
 __author__ = 'giginet'
 
 from ouroboros.utils.meta import copy_table, copy_column, deep_copy, set_schema_name
-from sqlalchemy.schema import Column, Table, MetaData
+from sqlalchemy.schema import Column, Table, MetaData, ForeignKeyConstraint
 
 class BaseConverter(object):
     """
@@ -66,7 +66,8 @@ class PortConverter(BaseConverter):
 
     def table(self, table):
         # すでに定義済みのテーブルを読み込む
-        return Table(self.dst_table_name, self.dst_meta, autoload=True)
+        table = Table(self.dst_table_name, self.dst_meta, autoload=True)
+        return table
 
     def record(self, record):
         new_records = {key: value for key, value in record.items() if not key in self.exclude_columns}

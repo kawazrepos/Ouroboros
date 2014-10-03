@@ -56,7 +56,8 @@ class Migrator(object):
                 dst_session.execute(dl)
                 dst_meta.reflect()
 
-                for r in src_session.query(src_query).all():
+                q = src_session.query(src_query.alias("subquery1"))
+                for r in q.all():
                     src_record = r._asdict()
                     dst_record = converter.record(src_record)
 

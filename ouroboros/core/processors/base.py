@@ -42,7 +42,7 @@ class BaseProcessor(object):
             return None
 
         pk_column = get_pk(table)
-        where = "{}=={}".format(pk_column.name, record[pk_column.name])
+        where = "{}={}".format(pk_column.name, record[pk_column.name])
 
         update = table.update().where(where).values(query)
         self.dst_session.execute(update)

@@ -33,8 +33,8 @@ class ContentTypeProcessor(BaseProcessor):
         src_ct = self.src_meta.tables[self.content_type_table_name]
         dst_ct = self.dst_meta.tables[self.content_type_table_name]
 
-        src_records = [r._asdict() for r in self.src_session.query(src_ct.select()).all()]
-        dst_records = [r._asdict() for r in self.dst_session.query(dst_ct.select()).all()]
+        src_records = [r._asdict() for r in self.src_session.query(src_ct.select().alias('subquery1')).all()]
+        dst_records = [r._asdict() for r in self.dst_session.query(dst_ct.select().alias('subquery1')).all()]
 
         # 変換テーブルを作成する
         for src_record in src_records:
@@ -48,7 +48,7 @@ class ContentTypeProcessor(BaseProcessor):
             table_name, column_name = target.split('.')
             print("Convert content type of {} in {}".format(column_name, table_name))
             table = self.dst_meta.tables[table_name]
-            for r in self.dst_session.query(table.select()).all():
+            for r in self.dst_session.query(table.select().alias('subquery1')).all():
                 record = r._asdict()
                 # 変換前のCTを取り出す
                 src_ct = record[column_name]
