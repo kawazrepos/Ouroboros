@@ -10,5 +10,17 @@ if __name__ == '__main__':
     logging.getLogger('sqlalchemy.pool').setLevel(logging.ERROR)
     logging.getLogger('sqlalchemy.dialects').setLevel(logging.ERROR)
 
-    migrator = Migrator(converters, 'sqlite:///db/kawaz.db', 'sqlite:///db/kawaz3.db')
-    migrator.migrate()
+    config = ConfigParser()
+    config.read('config.ini')
+    driver = config['driver']
+    if driver:
+        src = driver.get('src', None)
+        dst = driver.get('dst', None)
+
+        if not src or not dst:
+            raise Exception("You must set driver.src and driver.dst in your config.ini")
+
+        migrator = Migrator(converters,
+                            src,
+                            dst)
+        migrator.migrate()
