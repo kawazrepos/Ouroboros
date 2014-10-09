@@ -142,7 +142,7 @@ AttachmentProcessor
 `{commons:1}`を`{attachments:123456789abcdef}`など
 
 
-TimeZoneProcessor（未実装）
+TimeZoneProcessor
 ~~~~~~~~~~~~~~~~~~~
 
 2ndでは全てのdatetimeがJSTで保存されているが、3rdではUTCなので、タイムゾーンを変換する。
