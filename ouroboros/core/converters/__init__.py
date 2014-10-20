@@ -138,8 +138,9 @@ class PersonaConverter(JoinConverter):
         return record['username']
 
     def convert_role(record):
+        gods = ['giginet', 'miiojp', 'lambdalisue', 'shinka_cb', 'c000',]
         if 'username' in record:
-            if record['username'] == 'giginet':
+            if record['username'] in gods:
                 # ぎぎにゃんは神です
                 return 'seele'
         return 'children'
