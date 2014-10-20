@@ -137,8 +137,16 @@ class PersonaConverter(JoinConverter):
             return record['nickname']
         return record['username']
 
+    def convert_role(record):
+        gods = ['giginet', 'miiojp', 'lambdalisue', 'shinka_cb', 'c000',]
+        if 'username' in record:
+            if record['username'] in gods:
+                # ぎぎにゃんは神です
+                return 'seele'
+        return 'children'
+
     default_values = (
-        ('role', 'children'),
+        ('role', convert_role),
         ('avatar', convert_avatar_path),
         ('nickname', convert_nickname)
     )
