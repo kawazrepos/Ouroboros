@@ -18,6 +18,13 @@ class AnnouncementConverter(PortConverter):
         'body_markup_type'
     )
 
+    def convert_last_modifier(record):
+        return record['author_id']
+
+    default_values = (
+        ('last_modifier_id', convert_last_modifier),
+    )
+
 
 class AttachmentMaterialConverter(PortConverter):
     src_table_name = 'commons_material'
@@ -220,10 +227,14 @@ class ProjectConverter(PortConverter):
         path = record['icon']
         return re.sub("storage/(?P<path>projects/.+)", "\g<path>", path)
 
+    def convert_last_modifier(record):
+        return record['administrator_id']
+
     default_values = (
         ('repository', ''),
         ('tracker', ''),
-        ('icon', convert_icon_path)
+        ('icon', convert_icon_path),
+        ('last_modifier_id', convert_last_modifier),
     )
 
 class ProjectMemberConverter(PortConverter):
