@@ -152,10 +152,17 @@ class PersonaConverter(JoinConverter):
                 return 'seele'
         return 'children'
 
+    def convert_gender(record):
+        if 'gender' in record:
+            if record['gender']:
+                return record['gender']
+        return 'unknown'
+
     default_values = (
         ('role', convert_role),
         ('avatar', convert_avatar_path),
-        ('nickname', convert_nickname)
+        ('nickname', convert_nickname),
+        ('gender', convert_gender)
     )
 
 
