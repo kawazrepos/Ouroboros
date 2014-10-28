@@ -16,7 +16,7 @@ class ContentTypeProcessor(BaseProcessor):
     content_type_names = (
         (('auth', 'user'), ('personas', 'persona')),
         (('commons', 'material'), ('attachments', 'material')),
-        (('mcomments', 'markitupcomment'), ('comments', 'comment')),
+        (('mcomments', 'markitupcomment'), ('django_comments', 'comment')),
         (('star', 'star'), ('stars', 'star')),
     )
     content_type_table_name = 'django_content_type'
