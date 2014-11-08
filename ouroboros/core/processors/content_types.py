@@ -15,6 +15,9 @@ class ContentTypeProcessor(BaseProcessor):
     # (((app_label, model), (app_label, model)), )
     content_type_names = (
         (('auth', 'user'), ('personas', 'persona')),
+        (('profiles', 'profile'), ('personas', 'profile')),
+        (('profiles', 'skill'), ('personas', 'skill')),
+        (('profiles', 'account'), ('personas', 'account')),
         (('commons', 'material'), ('attachments', 'material')),
         (('mcomments', 'markitupcomment'), ('django_comments', 'comment')),
         (('star', 'star'), ('stars', 'star')),
