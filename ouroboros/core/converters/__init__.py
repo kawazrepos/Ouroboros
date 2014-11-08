@@ -148,7 +148,6 @@ class PersonaConverter(JoinConverter):
         gods = ['giginet', 'miiojp', 'lambdalisue', 'shinka_cb', 'c000',]
         if 'username' in record:
             if record['username'] in gods:
-                # ぎぎにゃんは神です
                 return 'seele'
         return 'children'
 
@@ -168,7 +167,7 @@ class PersonaConverter(JoinConverter):
 
 class AccountConverter(PortConverter):
     src_table_name = 'profiles_service'
-    dst_table_name = 'profiles_account'
+    dst_table_name = 'personas_account'
     rename_columns = (
         ('account', 'username'),
         ('service', 'service_id'),
@@ -201,6 +200,7 @@ class AccountConverter(PortConverter):
 
 class ProfileConverter(PortConverter):
     src_table_name = 'profiles_profile'
+    dst_table_name = 'personas_profile'
     exclude_columns = list(profile_deprecated_columns) + [
         'nickname',
         'mood',
@@ -211,6 +211,7 @@ class ProfileConverter(PortConverter):
 
 class ProfileSkillConverter(PortConverter):
     src_table_name = 'profiles_profile_skills'
+    dst_table_name = 'personas_profile_skills'
 
 
 class ProjectConverter(PortConverter):
