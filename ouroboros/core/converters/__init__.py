@@ -95,6 +95,9 @@ class EventConverter(PortConverter):
     rename_columns = (
         ('author_id', 'organizer_id'),
     )
+    default_values = (
+        ('category_id', None),
+    )
 
 
 class EventAttendeeConverter(PortConverter):
