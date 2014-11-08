@@ -21,7 +21,7 @@ class AttachmentProcessor(BaseProcessor):
         'blogs_entry.body',
         'django_comments.comment',
         'events_event.body',
-        'profiles_profile.remarks',
+        'personas_profile.remarks',
         'projects_project.body',
     )
 
