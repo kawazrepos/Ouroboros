@@ -15,9 +15,9 @@ class ContentTypeProcessor(BaseProcessor):
     # (((app_label, model), (app_label, model)), )
     content_type_names = (
         (('auth', 'user'), ('personas', 'persona')),
-        (('profiles', 'profile'), ('personas', 'profile')),
-        (('profiles', 'skill'), ('personas', 'skill')),
-        (('profiles', 'account'), ('personas', 'account')),
+        (('profiles', 'profile'), ('personas', 'persona')), # Profileへのstar, コメントは廃止されたのでPersonaに写す
+        (('profiles', 'skill'), ('personas', 'skill')), # 本来、絶対含まれないはずだが念のため
+        (('profiles', 'account'), ('personas', 'account')), # 同上
         (('commons', 'material'), ('attachments', 'material')),
         (('mcomments', 'markitupcomment'), ('django_comments', 'comment')),
         (('star', 'star'), ('stars', 'star')),
