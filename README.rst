@@ -149,3 +149,10 @@ TimeZoneProcessor
 
 具体的には保存時刻を9時間戻している。
 
+CodeBlockProcessor
+~~~~~~~~~~~~~~~~~~~~
+
+2ndのCodeBlock記法をKFMのFencedCodeBlockにコンバートします
+
+~~~ -> ```
+~~~.python -> ```
