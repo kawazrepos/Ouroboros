@@ -155,4 +155,4 @@ CodeBlockProcessor
 2ndのCodeBlock記法をKFMのFencedCodeBlockにコンバートします
 
 ~~~ -> ```
-~~~.python -> ```
+~~~.python -> ```.python

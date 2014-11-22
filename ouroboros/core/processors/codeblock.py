@@ -8,9 +8,9 @@ class CodeBlockProcessor(BaseProcessor):
     本文中のコードブロック記法をKFM（KawazFlavoredMarkdown）向けのFencedCodeBlockにコンバートします
 
     ~~~ -> ```
-    ~~~.python -> ```
+    ~~~.python -> ```python
     """
-    CODEBLOCK_PATTERN = r'''~{3}(\..+)?'''
+    CODEBLOCK_PATTERN = r'''~{3}\.?'''
     name = "CodeBlockProcessor"
     targets = (
         'announcements_announcement.body',
