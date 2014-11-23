@@ -71,6 +71,9 @@ class BlogEntryConverter(PortConverter):
         '_body_rendered',
         'publish_at_date'
     )
+    rename_columns = (
+        ('publish_at', 'published_at'),
+    )
 
 
 class CommentConverter(PortConverter):

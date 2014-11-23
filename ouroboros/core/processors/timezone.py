@@ -19,7 +19,7 @@ class TimeZoneProcessor(BaseProcessor):
         'attachments_material.created_at',
         'blogs_entry.created_at',
         'blogs_entry.updated_at',
-        'blogs_entry.publish_at',
+        'blogs_entry.published_at',
         'django_comments.submit_date',
         'events_event.created_at',
         'events_event.updated_at',
